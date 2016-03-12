@@ -1,15 +1,23 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QShortcut, QSplitter, QVBoxLayout, \
-        QWidget
 from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
 from PyQt5.QtWebKitWidgets import QWebInspector, QWebView
+from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
+                             QSplitter, QSystemTrayIcon, QVBoxLayout,
+                             QWidget)
 
 
 class Window(QWidget):
     def __init__(self):
         super(Window, self).__init__()
+        self.createAction()
+        self.createTrayIcon()
+        self.setIcon()
+        self.trayIcon.show()
+        self.trayIcon.activated.connect(self.iconActivated)
+
         zoom_factor = self.physicalDpiX() * 0.008
         self.view = QWebView(self)
         self.view.setZoomFactor(zoom_factor)
@@ -41,9 +49,33 @@ class Window(QWidget):
     def toggleInspector(self):
         self.webInspector.setVisible(not self.webInspector.isVisible())
 
+    def iconActivated(self, reason):
+        if reason in (QSystemTrayIcon.Trigger, QSystemTrayIcon.DoubleClick):
+            self.showNormal()
+
+    def createAction(self):
+        self.restoreAction = QAction("&Restore", self,
+                                     triggered=self.showNormal)
+        self.quitAction = QAction("&Quit", self,
+                                  triggered=QApplication.instance().quit)
+
+    def setIcon(self):
+        icon = QIcon('../icons/wechat.png')
+        self.trayIcon.setIcon(icon)
+        self.setWindowIcon(icon)
+
+    def createTrayIcon(self):
+        self.trayIconMenu = QMenu(self)
+        self.trayIconMenu.addAction(self.restoreAction)
+        self.trayIconMenu.addSeparator()
+        self.trayIconMenu.addAction(self.quitAction)
+        self.trayIcon = QSystemTrayIcon()
+        self.trayIcon.setContextMenu(self.trayIconMenu)
+
 
 def main():
     app = QApplication(sys.argv)
+    app.setApplicationName('WeChat')
     window = Window()
     window.showMaximized()
     window.view.load(QUrl('https://wx.qq.com'))
