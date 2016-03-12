@@ -10,7 +10,9 @@ from PyQt5.QtWebKitWidgets import QWebInspector, QWebView
 class Window(QWidget):
     def __init__(self):
         super(Window, self).__init__()
+        zoom_factor = self.physicalDpiX() * 0.008
         self.view = QWebView(self)
+        self.view.setZoomFactor(zoom_factor)
         self.view.settings().setAttribute(
                 QWebSettings.LocalStorageEnabled, True)
 
@@ -43,7 +45,7 @@ class Window(QWidget):
 def main():
     app = QApplication(sys.argv)
     window = Window()
-    window.show()
+    window.showMaximized()
     window.view.load(QUrl('https://wx.qq.com'))
     app.exec_()
 
