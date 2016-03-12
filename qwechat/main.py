@@ -1,5 +1,6 @@
 import sys
-
+import os
+from qwechat import icon_path
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
@@ -60,7 +61,7 @@ class Window(QWidget):
                                   triggered=QApplication.instance().quit)
 
     def setIcon(self):
-        icon = QIcon('../icons/wechat.png')
+        icon = QIcon(os.path.join(icon_path, 'qwechat.png'))
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
 
@@ -75,7 +76,7 @@ class Window(QWidget):
 
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName('WeChat')
+    app.setApplicationName('QWeChat')
     window = Window()
     window.showMaximized()
     window.view.load(QUrl('https://wx.qq.com'))
