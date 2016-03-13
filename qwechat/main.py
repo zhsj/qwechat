@@ -1,10 +1,11 @@
 import sys
 import os
 from qwechat import icon_path
+from qwechat.notifications import NotificationsBridge
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWebKitWidgets import QWebInspector, QWebView
+from PyQt5.QtWebKitWidgets import QWebInspector, QWebView, QWebPage
 from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
                              QSplitter, QSystemTrayIcon, QVBoxLayout,
                              QWidget)
@@ -12,33 +13,40 @@ from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
 
 class Window(QWidget):
     def __init__(self):
-        super(Window, self).__init__()
+        super().__init__()
         self.createAction()
         self.createTrayIcon()
         self.setIcon()
         self.trayIcon.show()
-        self.trayIcon.activated.connect(self.iconActivated)
 
-        zoom_factor = self.physicalDpiX() * 0.008
-        self.view = QWebView(self)
-        self.view.setZoomFactor(zoom_factor)
-        self.view.settings().setAttribute(
-            QWebSettings.LocalStorageEnabled, True)
-
+        self.setupView()
         self.setupInspector()
 
         self.splitter = QSplitter(self)
         self.splitter.setOrientation(Qt.Vertical)
-
+        self.splitter.addWidget(self.view)
+        self.splitter.addWidget(self.webInspector)
         layout = QVBoxLayout(self)
         layout.addWidget(self.splitter)
 
-        self.splitter.addWidget(self.view)
-        self.splitter.addWidget(self.webInspector)
+    def setupView(self):
+        self.view = QWebView(self)
+        self.view.setZoomFactor(self.physicalDpiX() * 0.008)
+        page = self.view.page()
+        page.setFeaturePermission(page.mainFrame(), QWebPage.Notifications,
+                                  QWebPage.PermissionGrantedByUser)
+        page.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
+        page.featurePermissionRequested.connect(self.permissionRequested)
+        page.mainFrame().javaScriptWindowObjectCleared.connect(
+            self.populateJavaScript)
+
+    def permissionRequested(self, frame, feature):
+        self.view.page().setFeaturePermission(
+            frame, feature, QWebPage.PermissionGrantedByUser)
 
     def setupInspector(self):
         page = self.view.page()
-        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
         self.webInspector = QWebInspector(self)
         self.webInspector.setPage(page)
 
@@ -55,23 +63,41 @@ class Window(QWidget):
             self.showNormal()
 
     def createAction(self):
-        self.restoreAction = QAction("&Restore", self,
+        self.restoreAction = QAction("Restore", self,
                                      triggered=self.showNormal)
-        self.quitAction = QAction("&Quit", self,
+        self.quitAction = QAction("Quit", self,
                                   triggered=QApplication.instance().quit)
-
-    def setIcon(self):
-        icon = QIcon(os.path.join(icon_path, 'qwechat.png'))
-        self.trayIcon.setIcon(icon)
-        self.setWindowIcon(icon)
 
     def createTrayIcon(self):
         self.trayIconMenu = QMenu(self)
         self.trayIconMenu.addAction(self.restoreAction)
         self.trayIconMenu.addSeparator()
         self.trayIconMenu.addAction(self.quitAction)
-        self.trayIcon = QSystemTrayIcon()
+        self.trayIcon = QSystemTrayIcon(self)
         self.trayIcon.setContextMenu(self.trayIconMenu)
+        self.trayIcon.activated.connect(self.iconActivated)
+
+        # BUG(zhsj): not triggered
+        self.trayIcon.messageClicked.connect(self.messageClicked)
+
+    def messageClicked(self):
+        if not self.isVisible():
+            self.showNormal()
+
+    def setIcon(self):
+        icon = QIcon(os.path.join(icon_path, 'qwechat.png'))
+        self.trayIcon.setIcon(icon)
+        self.setWindowIcon(icon)
+
+    def populateJavaScript(self):
+        notificatonsBridge = NotificationsBridge(self)
+        frame = self.view.page().mainFrame()
+        frame.addToJavaScriptWindowObject("notify", notificatonsBridge)
+        injectJS = """window.Notification = function(title, opts) {
+    if(typeof opts === 'undefined') { notify.showMsg(title); }
+    else { notify.showMsg(title, opts.body); }
+}"""
+        frame.evaluateJavaScript(injectJS)
 
 
 def main():
