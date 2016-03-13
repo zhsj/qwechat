@@ -23,7 +23,7 @@ class Window(QWidget):
         self.view = QWebView(self)
         self.view.setZoomFactor(zoom_factor)
         self.view.settings().setAttribute(
-                QWebSettings.LocalStorageEnabled, True)
+            QWebSettings.LocalStorageEnabled, True)
 
         self.setupInspector()
 
