@@ -1,6 +1,7 @@
 import os
 import config
 from notifications import NotificationsBridge
+from popup import Popup
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
@@ -28,6 +29,8 @@ class Window(QWidget):
         self.splitter.addWidget(self.webInspector)
         layout = QVBoxLayout(self)
         layout.addWidget(self.splitter)
+
+        self.popup = Popup(self)
 
     def setupView(self):
         self.view = QWebView(self)

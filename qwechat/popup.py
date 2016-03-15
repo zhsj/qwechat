@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtCore import Qt, QRect, QPoint
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
-                             QLabel, QGridLayout)
+                             QLabel, QGridLayout, QStyle)
 
 
 class Popup(QWidget):
@@ -17,16 +17,20 @@ class Popup(QWidget):
                 ''')
 
     def setupGeo(self):
+        self.setFixedSize(300, 100)
         availRect = QApplication.desktop().availableGeometry()
         rect = QRect(0, 0, 300, 100)
-        rect.moveBottomRight(availRect.bottomRight() - QPoint(5, 5))
+        rect.moveBottomRight(availRect.bottomRight() - QPoint(5, 8))
         self.setGeometry(rect)
 
     def addLayout(self):
         self.avatar = QLabel(self)
         self.title = QLabel(self)
         self.text = QLabel(self)
+        self.text.setWordWrap(True)
+        icon = QApplication.style().standardIcon(QStyle.SP_TitleBarCloseButton)
         closeBtn = QPushButton(self)
+        closeBtn.setIcon(icon)
         closeBtn.clicked.connect(self.close)
         layout = QGridLayout(self)
         layout.addWidget(self.avatar, 0, 0, 2, 1, Qt.AlignLeft)
