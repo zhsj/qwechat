@@ -1,7 +1,6 @@
-import sys
 import os
-from qwechat import icon_path
-from qwechat.notifications import NotificationsBridge
+import config
+from notifications import NotificationsBridge
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
@@ -20,6 +19,7 @@ class Window(QWidget):
         self.trayIcon.show()
 
         self.setupView()
+        self.view.load(QUrl(config.WX_URL))
         self.setupInspector()
 
         self.splitter = QSplitter(self)
@@ -90,7 +90,7 @@ class Window(QWidget):
             self.showFront()
 
     def setIcon(self):
-        icon = QIcon(os.path.join(icon_path, 'qwechat.png'))
+        icon = QIcon(os.path.join(config.icon_path, 'qwechat.png'))
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
 
@@ -103,15 +103,3 @@ class Window(QWidget):
     else { notify.showMsg(title, opts.body); }
 }"""
         frame.evaluateJavaScript(injectJS)
-
-
-def main():
-    app = QApplication(sys.argv)
-    app.setApplicationName('QWeChat')
-    window = Window()
-    window.showMaximized()
-    window.view.load(QUrl('https://wx.qq.com'))
-    app.exec_()
-
-if __name__ == "__main__":
-    main()

@@ -7,5 +7,5 @@ setup(name='qwechat',
       url='https://github.com/zhsj/qwechat',
       license='GPLv3',
       entry_points={
-          'gui_scripts': ['qwechat=qwechat.main:main']
+          'gui_scripts': ['qwechat=qwechat.app:runApp']
       })
