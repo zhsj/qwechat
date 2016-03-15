@@ -58,13 +58,19 @@ class Window(QWidget):
     def toggleInspector(self):
         self.webInspector.setVisible(not self.webInspector.isVisible())
 
+    def showFront(self):
+        self.setWindowState((self.windowState() & ~Qt.WindowMinimized) |
+                            Qt.WindowActive)
+        self.activateWindow()
+        self.show()
+
     def iconActivated(self, reason):
         if reason in (QSystemTrayIcon.Trigger, QSystemTrayIcon.DoubleClick):
-            self.showNormal()
+            self.showFront()
 
     def createAction(self):
         self.restoreAction = QAction("Restore", self,
-                                     triggered=self.showNormal)
+                                     triggered=self.showFront)
         self.quitAction = QAction("Quit", self,
                                   triggered=QApplication.instance().quit)
 
@@ -82,7 +88,7 @@ class Window(QWidget):
 
     def messageClicked(self):
         if not self.isVisible():
-            self.showNormal()
+            self.showFront()
 
     def setIcon(self):
         icon = QIcon(os.path.join(icon_path, 'qwechat.png'))
