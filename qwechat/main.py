@@ -59,8 +59,7 @@ class Window(QWidget):
         self.webInspector.setVisible(not self.webInspector.isVisible())
 
     def showFront(self):
-        self.setWindowState((self.windowState() & ~Qt.WindowMinimized) |
-                            Qt.WindowActive)
+        self.setWindowState(self.windowState() & ~Qt.WindowMinimized)
         self.activateWindow()
         self.show()
 
