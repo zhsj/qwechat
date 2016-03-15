@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
 class Popup(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.parent = parent
         self.setWindowFlags(Qt.Popup | Qt.X11BypassWindowManagerHint |
                             Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_MacAlwaysShowToolWindow)
@@ -15,6 +16,14 @@ class Popup(QWidget):
         self.setStyleSheet('''
                 QWidget { background: white; }
                 ''')
+
+    def mouseReleaseEvent(self, event):
+        if self.parent:
+            try:
+                self.parent.showFront()
+            except:
+                pass
+        self.close()
 
     def setupGeo(self):
         self.setFixedSize(300, 100)
