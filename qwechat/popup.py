@@ -33,7 +33,7 @@ class Popup(QWidget):
         self.setGeometry(rect)
 
     def addLayout(self):
-        self.avatar = QLabel(self)
+        self.icon = QLabel(self)
         self.title = QLabel(self)
         self.text = QLabel(self)
         self.text.setWordWrap(True)
@@ -42,7 +42,7 @@ class Popup(QWidget):
         closeBtn.setIcon(icon)
         closeBtn.clicked.connect(self.close)
         layout = QGridLayout(self)
-        layout.addWidget(self.avatar, 0, 0, 2, 1, Qt.AlignLeft)
+        layout.addWidget(self.icon, 0, 0, 2, 1, Qt.AlignLeft)
         layout.addWidget(self.title, 0, 1, 1, 1, Qt.AlignLeft)
         layout.addWidget(closeBtn, 0, 2, 1, 1, Qt.AlignRight)
         layout.addWidget(self.text, 1, 1, 2, 2, Qt.AlignLeft)
