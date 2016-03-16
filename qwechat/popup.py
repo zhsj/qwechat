@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtCore import Qt, QRect, QPoint
+import config
+from PyQt5.QtCore import Qt, QRect, QPoint, QTimer
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
                              QLabel, QGridLayout, QStyle)
 
@@ -21,6 +22,7 @@ class Popup(QWidget):
                 QLabel#title { font-weight: bold; font-size: 16px }
                 QLabel#text { font-size: 16px }
                 ''')
+        QTimer.singleShot(config.NOTIFY_TIMEOUT, self.close)
 
     def mouseReleaseEvent(self, event):
         if self.parent:
