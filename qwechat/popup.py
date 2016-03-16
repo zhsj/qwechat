@@ -7,14 +7,19 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
 class Popup(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.setObjectName("container")
         self.parent = parent
         self.setWindowFlags(Qt.Popup | Qt.X11BypassWindowManagerHint |
-                            Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
+                            Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint |
+                            Qt.WA_ShowWithoutActivating)
         self.setAttribute(Qt.WA_MacAlwaysShowToolWindow)
         self.setupGeo()
         self.addLayout()
         self.setStyleSheet('''
-                QWidget { background: white; }
+                QWidget#container { background: white;
+                        border: 1px solid #f1f1f1 }
+                QLabel#title { font-weight: bold; font-size: 16px }
+                QLabel#text { font-size: 16px }
                 ''')
 
     def mouseReleaseEvent(self, event):
@@ -34,8 +39,11 @@ class Popup(QWidget):
 
     def addLayout(self):
         self.icon = QLabel(self)
+        self.icon.setObjectName("icon")
         self.title = QLabel(self)
+        self.title.setObjectName("title")
         self.text = QLabel(self)
+        self.text.setObjectName("text")
         self.text.setWordWrap(True)
         icon = QApplication.style().standardIcon(QStyle.SP_TitleBarCloseButton)
         closeBtn = QPushButton(self)
