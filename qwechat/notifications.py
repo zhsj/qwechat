@@ -2,7 +2,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 
 class NotificationsBridge(QObject):
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
         # self.trayIcon = parent.trayIcon
         self.popup = parent.popup
