@@ -3,8 +3,8 @@ import config
 from notifications import NotificationsBridge
 from popup import Popup
 from network import NetworkManager
-from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt, QUrl, QUrlQuery
+from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtWebKit import QWebSettings
 from PyQt5.QtWebKitWidgets import QWebInspector, QWebView, QWebPage
 from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
@@ -41,14 +41,27 @@ class Window(QWidget):
         page.setFeaturePermission(page.mainFrame(), QWebPage.Notifications,
                                   QWebPage.PermissionGrantedByUser)
         page.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
+
+        # BUG(zhsj): Still can't use copy func in wechat menu
+        page.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard,
+                                     True)
         page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
         page.featurePermissionRequested.connect(self.permissionRequested)
         page.mainFrame().javaScriptWindowObjectCleared.connect(
             self.populateJavaScript)
+        page.setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+        self.view.linkClicked[QUrl].connect(self.openURL)
 
     def permissionRequested(self, frame, feature):
         self.view.page().setFeaturePermission(
             frame, feature, QWebPage.PermissionGrantedByUser)
+
+    def openURL(self, url):
+        if QUrl(config.WX_URL).isParentOf(url):
+            query = QUrlQuery(url)
+            if query.hasQueryItem("requrl"):
+                requrl = query.queryItemValue("requrl", QUrl.FullyDecoded)
+                QDesktopServices.openUrl(QUrl(requrl))
 
     def setupNAM(self):
         self.nam = NetworkManager(self)
