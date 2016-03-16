@@ -22,7 +22,15 @@ class Popup(QWidget):
                 QLabel#title { font-weight: bold; font-size: 16px }
                 QLabel#text { font-size: 16px }
                 ''')
-        QTimer.singleShot(config.NOTIFY_TIMEOUT, self.close)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.close)
+        self.timer.start(config.NOTIFY_TIMEOUT)
+
+    def enterEvent(self, event):
+        self.timer.stop()
+
+    def leaveEvent(self, event):
+        self.timer.start(config.NOTIFY_TIMEOUT)
 
     def mouseReleaseEvent(self, event):
         if self.parent:
