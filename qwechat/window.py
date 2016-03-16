@@ -2,6 +2,7 @@ import os
 import config
 from notifications import NotificationsBridge
 from popup import Popup
+from network import NetworkManager
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebKit import QWebSettings
@@ -20,6 +21,7 @@ class Window(QWidget):
         self.trayIcon.show()
 
         self.setupView()
+        self.setupNAM()
         self.view.load(QUrl(config.WX_URL))
         self.setupInspector()
 
@@ -47,6 +49,10 @@ class Window(QWidget):
     def permissionRequested(self, frame, feature):
         self.view.page().setFeaturePermission(
             frame, feature, QWebPage.PermissionGrantedByUser)
+
+    def setupNAM(self):
+        self.nam = NetworkManager(self)
+        self.view.page().setNetworkAccessManager(self.nam)
 
     def setupInspector(self):
         page = self.view.page()
@@ -103,6 +109,6 @@ class Window(QWidget):
         frame.addToJavaScriptWindowObject("notify", notificatonsBridge)
         injectJS = """window.Notification = function(title, opts) {
     if(typeof opts === 'undefined') { notify.showMsg(title); }
-    else { notify.showMsg(title, opts.body); }
+    else { notify.showMsg(title, opts.body, opts.icon); }
 }"""
         frame.evaluateJavaScript(injectJS)

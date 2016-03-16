@@ -1,6 +1,7 @@
 import sys
 import config
-from PyQt5.QtCore import Qt, QRect, QPoint, QTimer
+from PyQt5.QtCore import Qt, QRect, QPoint, QTimer, QSize
+from PyQt5.QtGui import QImageReader, QPixmap
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
                              QLabel, QGridLayout, QStyle)
 
@@ -60,13 +61,17 @@ class Popup(QWidget):
         closeBtn.setIcon(icon)
         closeBtn.clicked.connect(self.close)
         layout = QGridLayout(self)
-        layout.addWidget(self.icon, 0, 0, 2, 1, Qt.AlignLeft)
+        layout.addWidget(self.icon, 0, 0, 2, 1, Qt.AlignCenter)
         layout.addWidget(self.title, 0, 1, 1, 1, Qt.AlignLeft)
         layout.addWidget(closeBtn, 0, 2, 1, 1, Qt.AlignRight)
         layout.addWidget(self.text, 1, 1, 2, 2, Qt.AlignLeft)
         self.setLayout(layout)
 
     def updateInfo(self, title, text="", icon=None):
+        if icon:
+            image_reader = QImageReader(icon)
+            image_reader.setScaledSize(QSize(80, 80))
+            self.icon.setPixmap(QPixmap.fromImageReader(image_reader))
         self.title.setText(title)
         self.text.setText(text)
 
