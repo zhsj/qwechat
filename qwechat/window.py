@@ -1,4 +1,3 @@
-import os
 import config
 from notifications import NotificationsBridge
 from popup import Popup
@@ -112,7 +111,7 @@ class Window(QWidget):
             self.showFront()
 
     def setIcon(self):
-        icon = QIcon(os.path.join(config.icon_path, 'qwechat.png'))
+        icon = QIcon(config.icon_path)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
 
@@ -120,8 +119,6 @@ class Window(QWidget):
         notificatonsBridge = NotificationsBridge(self)
         frame = self.view.page().mainFrame()
         frame.addToJavaScriptWindowObject("notify", notificatonsBridge)
-        injectJS = """window.Notification = function(title, opts) {
-    if(typeof opts === 'undefined') { notify.showMsg(title); }
-    else { notify.showMsg(title, opts.body, opts.icon); }
-}"""
+        with open(config.inject_js_path, "r") as f:
+            injectJS = f.read()
         frame.evaluateJavaScript(injectJS)
