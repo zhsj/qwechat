@@ -6,8 +6,8 @@ window.Notification = function(title, opts) {
 };
 
 
+// Include MIT Licensed code. Translated by Babel.js
 // https://github.com/geeeeeeeeek/electronic-wechat/blob/v1.1.1/src/inject-preload.js
-// Licensed at MIT. Translated by Babel.js
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
