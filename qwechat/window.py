@@ -20,6 +20,7 @@ class Window(QWidget):
 
         self.setupView()
         self.setupNAM()
+        self.nam.loadCookie()
         self.view.load(QUrl(config.WX_URL))
         self.setupLayout()
 
@@ -55,9 +56,13 @@ class Window(QWidget):
         self.activateWindow()
         self.show()
 
+    def quitApp(self):
+        self.nam.saveCookie()
+        QApplication.instance().quit()
+
     def setupTrayIcon(self):
         self.trayIcon = TrayIcon(self)
-        self.trayIcon.setup(self, self.showFront, QApplication.instance().quit)
+        self.trayIcon.setup(self, self.showFront, self.quitApp)
 
     def setIcon(self):
         icon = QIcon(config.icon_path)
