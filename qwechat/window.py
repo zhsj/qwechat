@@ -3,20 +3,19 @@ from notifications import NotificationsBridge
 from popup import Popup
 from network import NetworkManager
 from view import View
+from tray import TrayIcon
 from PyQt5.QtCore import Qt, QUrl, QUrlQuery
 from PyQt5.QtGui import QIcon, QDesktopServices
 # from PyQt5.QtWebKit import QWebSettings
 from PyQt5.QtWebKitWidgets import QWebInspector
-from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
-                             QSplitter, QSystemTrayIcon, QVBoxLayout,
-                             QWidget)
+from PyQt5.QtWidgets import (QApplication, QShortcut, QSplitter,
+                             QVBoxLayout, QWidget)
 
 
 class Window(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.createAction()
-        self.createTrayIcon()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupTrayIcon()
         self.setIcon()
         self.trayIcon.show()
 
@@ -62,24 +61,9 @@ class Window(QWidget):
         self.activateWindow()
         self.show()
 
-    def iconActivated(self, reason):
-        if reason in (QSystemTrayIcon.Trigger, QSystemTrayIcon.DoubleClick):
-            self.showFront()
-
-    def createAction(self):
-        self.restoreAction = QAction("Restore", self,
-                                     triggered=self.showFront)
-        self.quitAction = QAction("Quit", self,
-                                  triggered=QApplication.instance().quit)
-
-    def createTrayIcon(self):
-        self.trayIconMenu = QMenu(self)
-        self.trayIconMenu.addAction(self.restoreAction)
-        self.trayIconMenu.addSeparator()
-        self.trayIconMenu.addAction(self.quitAction)
-        self.trayIcon = QSystemTrayIcon(self)
-        self.trayIcon.setContextMenu(self.trayIconMenu)
-        self.trayIcon.activated.connect(self.iconActivated)
+    def setupTrayIcon(self):
+        self.trayIcon = TrayIcon(self)
+        self.trayIcon.setup(self, self.showFront, QApplication.instance().quit)
 
     def setIcon(self):
         icon = QIcon(config.icon_path)
