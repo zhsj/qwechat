@@ -4,12 +4,11 @@ from popup import Popup
 from network import NetworkManager
 from view import View
 from tray import TrayIcon
+from inspector import Inspector
 from PyQt5.QtCore import Qt, QUrl, QUrlQuery
 from PyQt5.QtGui import QIcon, QDesktopServices
-# from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWebKitWidgets import QWebInspector
-from PyQt5.QtWidgets import (QApplication, QShortcut, QSplitter,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWidgets import QApplication, QSplitter, QVBoxLayout, QWidget
 
 
 class Window(QWidget):
@@ -22,14 +21,7 @@ class Window(QWidget):
         self.setupView()
         self.setupNAM()
         self.view.load(QUrl(config.WX_URL))
-        self.setupInspector()
-
-        self.splitter = QSplitter(self)
-        self.splitter.setOrientation(Qt.Vertical)
-        self.splitter.addWidget(self.view)
-        self.splitter.addWidget(self.webInspector)
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.splitter)
+        self.setupLayout()
 
         self.popup = Popup(self.showFront, self)
 
@@ -43,18 +35,20 @@ class Window(QWidget):
         self.nam = NetworkManager(self)
         self.view.page().setNetworkAccessManager(self.nam)
 
-    def setupInspector(self):
-        page = self.view.page()
-        self.webInspector = QWebInspector(self)
-        self.webInspector.setPage(page)
-
-        shortcut = QShortcut(self)
-        shortcut.setKey(Qt.Key_F12)
-        shortcut.activated.connect(self.toggleInspector)
-        self.webInspector.setVisible(False)
-
-    def toggleInspector(self):
-        self.webInspector.setVisible(not self.webInspector.isVisible())
+    def setupLayout(self):
+        layout = QVBoxLayout(self)
+        if config.DEBUG:
+            self.view.page().settings().setAttribute(
+                QWebSettings.DeveloperExtrasEnabled, True)
+            webInspector = Inspector(self)
+            webInspector.setPage(self.view.page())
+            self.splitter = QSplitter(self)
+            self.splitter.setOrientation(Qt.Vertical)
+            self.splitter.addWidget(self.view)
+            self.splitter.addWidget(webInspector)
+            layout.addWidget(self.splitter)
+        else:
+            layout.addWidget(self.view)
 
     def showFront(self):
         self.setWindowState(self.windowState() & ~Qt.WindowMinimized)

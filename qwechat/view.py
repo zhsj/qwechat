@@ -14,7 +14,6 @@ class View(QWebView):
         # BUG(zhsj): Still can't use copy func in wechat menu
         page.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard,
                                      True)
-        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
         page.featurePermissionRequested.connect(self.permissionRequested)
         page.setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
 
