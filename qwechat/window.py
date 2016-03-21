@@ -31,7 +31,7 @@ class Window(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.splitter)
 
-        self.popup = Popup(self)
+        self.popup = Popup(self.showFront, self)
 
     def setupView(self):
         self.view = QWebView(self)
@@ -116,7 +116,7 @@ class Window(QWidget):
         self.setWindowIcon(icon)
 
     def populateJavaScript(self):
-        notificatonsBridge = NotificationsBridge(self)
+        notificatonsBridge = NotificationsBridge(self.nam, self.popup, self)
         frame = self.view.page().mainFrame()
         frame.addToJavaScriptWindowObject("notify", notificatonsBridge)
         with open(config.inject_js_path, "r") as f:

@@ -7,10 +7,10 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
 
 
 class Popup(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, callback=None, parent=None):
         super().__init__(parent)
         self.setObjectName("container")
-        self.parent = parent
+        self.callback = callback
         self.setWindowFlags(Qt.Popup | Qt.X11BypassWindowManagerHint |
                             Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint |
                             Qt.WA_ShowWithoutActivating)
@@ -34,11 +34,8 @@ class Popup(QWidget):
         self.timer.start(config.NOTIFY_TIMEOUT)
 
     def mouseReleaseEvent(self, event):
-        if self.parent:
-            try:
-                self.parent.showFront()
-            except:
-                pass
+        if callable(self.callback):
+            self.callback()
         self.close()
 
     def setupGeo(self):

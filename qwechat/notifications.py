@@ -3,18 +3,16 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 
 class NotificationsBridge(QObject):
-    def __init__(self, parent):
+    def __init__(self, nam, popup, parent=None):
         super().__init__(parent)
-        # self.trayIcon = parent.trayIcon
-        self.parent = parent
-        self.popup = parent.popup
+        self.nam = nam
+        self.popup = popup
 
     @pyqtSlot(str)
     @pyqtSlot(str, str)
     @pyqtSlot(str, str, str)
     def showMsg(self, title, msg="", icon=""):
-        # self.trayIcon.showMessage(title, msg)
         icon_url = config.WX_URL.rstrip('/') + '/' + icon.lstrip('/')
-        icon_img = self.parent.nam.getCache(icon_url)
+        icon_img = self.nam.getCache(icon_url)
         self.popup.updateInfo(title, msg, icon_img)
         self.popup.show()
