@@ -2,10 +2,11 @@ import config
 from notifications import NotificationsBridge
 from popup import Popup
 from network import NetworkManager
+from view import View
 from PyQt5.QtCore import Qt, QUrl, QUrlQuery
 from PyQt5.QtGui import QIcon, QDesktopServices
-from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWebKitWidgets import QWebInspector, QWebView, QWebPage
+# from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWebKitWidgets import QWebInspector
 from PyQt5.QtWidgets import (QApplication, QAction, QMenu, QShortcut,
                              QSplitter, QSystemTrayIcon, QVBoxLayout,
                              QWidget)
@@ -34,33 +35,10 @@ class Window(QWidget):
         self.popup = Popup(self.showFront, self)
 
     def setupView(self):
-        self.view = QWebView(self)
-        self.view.setZoomFactor(self.physicalDpiX() * 0.008)
-        page = self.view.page()
-        page.setFeaturePermission(page.mainFrame(), QWebPage.Notifications,
-                                  QWebPage.PermissionGrantedByUser)
-        page.settings().setAttribute(QWebSettings.LocalStorageEnabled, True)
-
-        # BUG(zhsj): Still can't use copy func in wechat menu
-        page.settings().setAttribute(QWebSettings.JavascriptCanAccessClipboard,
-                                     True)
-        page.settings().setAttribute(QWebSettings.DeveloperExtrasEnabled, True)
-        page.featurePermissionRequested.connect(self.permissionRequested)
-        page.mainFrame().javaScriptWindowObjectCleared.connect(
+        self.view = View(self)
+        self.view.page().mainFrame().javaScriptWindowObjectCleared.connect(
             self.populateJavaScript)
-        page.setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
         self.view.linkClicked[QUrl].connect(self.openURL)
-
-    def permissionRequested(self, frame, feature):
-        self.view.page().setFeaturePermission(
-            frame, feature, QWebPage.PermissionGrantedByUser)
-
-    def openURL(self, url):
-        if QUrl(config.WX_URL).isParentOf(url):
-            query = QUrlQuery(url)
-            if query.hasQueryItem("requrl"):
-                requrl = query.queryItemValue("requrl", QUrl.FullyDecoded)
-                QDesktopServices.openUrl(QUrl(requrl))
 
     def setupNAM(self):
         self.nam = NetworkManager(self)
@@ -103,13 +81,6 @@ class Window(QWidget):
         self.trayIcon.setContextMenu(self.trayIconMenu)
         self.trayIcon.activated.connect(self.iconActivated)
 
-        # BUG(zhsj): not triggered
-        self.trayIcon.messageClicked.connect(self.messageClicked)
-
-    def messageClicked(self):
-        if not self.isVisible():
-            self.showFront()
-
     def setIcon(self):
         icon = QIcon(config.icon_path)
         self.trayIcon.setIcon(icon)
@@ -122,3 +93,10 @@ class Window(QWidget):
         with open(config.inject_js_path, "r") as f:
             injectJS = f.read()
         frame.evaluateJavaScript(injectJS)
+
+    def openURL(self, url):
+        if QUrl(config.WX_URL).isParentOf(url):
+            query = QUrlQuery(url)
+            if query.hasQueryItem("requrl"):
+                requrl = query.queryItemValue("requrl", QUrl.FullyDecoded)
+                QDesktopServices.openUrl(QUrl(requrl))
