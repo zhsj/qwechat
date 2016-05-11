@@ -5,6 +5,9 @@ APP_NAME = "QWeChat"
 NOTIFY_TIMEOUT = 5000
 DEBUG = False
 
+PROXY_ENABLE = True
+PROXY_INFO = ("socks5", "127.0.0.1", 1080)
+
 icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                          'icons/qwechat.png')
 if not os.path.exists(icon_path):

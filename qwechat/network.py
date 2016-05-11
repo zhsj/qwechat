@@ -3,6 +3,7 @@ import json
 from PyQt5.QtCore import QStandardPaths, QUrl
 from PyQt5.QtNetwork import (QNetworkAccessManager, QNetworkDiskCache,
                              QNetworkCookie, QNetworkCookieJar)
+from proxy import proxy
 
 
 class NetworkManager(QNetworkAccessManager):
@@ -16,6 +17,7 @@ class NetworkManager(QNetworkAccessManager):
         disk_cache.setCacheDirectory(self.cache_dir)
         self.setCache(disk_cache)
         self.setCookieJar(self.cookie_jar)
+        self.setProxy(proxy)
 
     def getCache(self, url):
         return self.cache().data(QUrl(url))
