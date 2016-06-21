@@ -4,6 +4,7 @@ from PyQt5.QtCore import QStandardPaths, QUrl
 from PyQt5.QtNetwork import (QNetworkAccessManager, QNetworkDiskCache,
                              QNetworkCookie, QNetworkCookieJar)
 from proxy import proxy
+import config
 
 
 class NetworkManager(QNetworkAccessManager):
@@ -12,9 +13,13 @@ class NetworkManager(QNetworkAccessManager):
         self.cookie_jar = QNetworkCookieJar()
         self.cache_dir = QStandardPaths.writableLocation(
             QStandardPaths.CacheLocation)
+        os.makedirs(self.cache_dir, exist_ok=True)
+        self.temp_dir = QStandardPaths.writableLocation(
+            QStandardPaths.TempLocation)
         self.cookie_file = os.path.join(self.cache_dir, 'cookie.json')
         disk_cache = QNetworkDiskCache(self)
-        disk_cache.setCacheDirectory(self.cache_dir)
+        disk_cache.setCacheDirectory(os.path.join(self.temp_dir,
+                                                  config.APP_NAME))
         self.setCache(disk_cache)
         self.setCookieJar(self.cookie_jar)
         self.setProxy(proxy)
