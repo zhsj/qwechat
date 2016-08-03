@@ -2,7 +2,8 @@ import os
 import json
 from PyQt5.QtCore import QStandardPaths, QUrl
 from PyQt5.QtNetwork import (QNetworkAccessManager, QNetworkDiskCache,
-                             QNetworkCookie, QNetworkCookieJar)
+                             QNetworkCookie, QNetworkCookieJar,
+                             QNetworkRequest)
 from proxy import proxy
 import config
 
@@ -41,3 +42,11 @@ class NetworkManager(QNetworkAccessManager):
             self.cookie_jar.setAllCookies([
                 QNetworkCookie.parseCookies(c.encode('utf-8'))[0]
                 for c in cookie])
+
+    def createRequest(self, op, req, outgoingData=0):
+        url = req.url()
+        if url.path().find('webwxgetvideo') != -1:
+            req.setAttribute(QNetworkRequest.HttpPipeliningAllowedAttribute,
+                             True)
+            req.setRawHeader(b'Range', b'bytes=0-')
+        return super().createRequest(op, req, outgoingData)
