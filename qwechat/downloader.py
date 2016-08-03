@@ -26,7 +26,6 @@ class Downloader(QObject):
         if len(filenames) > 0:
             filename = filenames[0]
         filename = filename.replace('"', '')
-        print(filename)
         path, _ = QFileDialog.getSaveFileName(
             self.parent, QCoreApplication.translate("Downloader", "Save File"),
             filename)
