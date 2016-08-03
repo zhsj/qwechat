@@ -12,7 +12,7 @@ PROXY_ENABLE = False
 PROXY_INFO = ("socks5", "127.0.0.1", 1080)
 
 icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                         'icons/qwechat.png')
+                         os.path.pardir, 'data/icons/qwechat.png')
 if not os.path.exists(icon_path):
     icon_path = os.path.expanduser("~/.local/share/icons/qwechat.png")
 
