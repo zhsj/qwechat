@@ -19,7 +19,7 @@ if not os.path.exists(icon_path):
 if not os.path.exists(icon_path):
     icon_path = "/usr/local/share/icons/qwechat.png"
 
-inject_js_path = os.path.join(os.path.dirname(__file__), 'js/inject.js')
+inject_js_path = os.path.join(os.path.dirname(__file__), 'js', 'inject.js')
 
 
 if __name__ == '__main__':
