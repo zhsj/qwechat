@@ -2,7 +2,7 @@ import os
 
 WX_URL = "https://wx.qq.com/"
 APP_NAME = "QWeChat"
-NOTIFY_TIMEOUT = 5000
+NOTIFY_TIMEOUT = 10000
 DEBUG = False
 
 if DEBUG:

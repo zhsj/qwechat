@@ -1,9 +1,9 @@
 import sys
 import config
 from PyQt5.QtCore import Qt, QRect, QPoint, QTimer, QSize
-from PyQt5.QtGui import QImageReader, QPixmap
+from PyQt5.QtGui import QImageReader, QPainter, QPixmap
 from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton,
-                             QLabel, QGridLayout, QStyle)
+                             QLabel, QGridLayout, QStyle, QStyleOption)
 
 
 class Popup(QWidget):
@@ -34,9 +34,10 @@ class Popup(QWidget):
         self.timer.start(config.NOTIFY_TIMEOUT)
 
     def mouseReleaseEvent(self, event):
-        if callable(self.callback):
-            self.callback()
-        self.close()
+        if event.button() == Qt.LeftButton:
+            if callable(self.callback):
+                self.callback()
+            self.close()
 
     def setupGeo(self):
         self.setFixedSize(300, 100)
@@ -71,6 +72,12 @@ class Popup(QWidget):
             self.icon.setPixmap(QPixmap.fromImageReader(image_reader))
         self.title.setText(title)
         self.text.setText(text)
+
+    def paintEvent(self, event):
+        opt = QStyleOption()
+        opt.initFrom(self)
+        p = QPainter(self)
+        self.style().drawPrimitive(QStyle.PE_Widget, opt, p, self)
 
 if __name__ == '__main__':
     import signal

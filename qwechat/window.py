@@ -55,7 +55,7 @@ class Window(QWidget):
 
     def setupTrayIcon(self):
         self.trayIcon = TrayIcon(self)
-        self.trayIcon.setup(self, self.showFront, self.quitApp)
+        self.trayIcon.setup(self.showFront, self.quitApp)
 
     def setIcon(self):
         icon = QIcon(config.icon_path)
