@@ -50,3 +50,8 @@ class Page(QWebPage):
     def userAgentForUrl(self, url):
         return ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
                 "(KHTML, like Gecko) Chrome/54.0.2810.2 Safari/537.36")
+
+    def acceptNavigationRequest(self, frame, req, _type):
+        if req.url().url().endswith('fake'):
+            return False
+        return super().acceptNavigationRequest(frame, req, _type)
