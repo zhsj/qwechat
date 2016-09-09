@@ -4,7 +4,7 @@ WX_URL = "https://wx.qq.com/"
 APP_NAME = "QWeChat"
 NOTIFY_TIMEOUT = 10000
 
-DEBUG = False
+DEBUG = True
 DEBUG_PORT = 8000
 if DEBUG:
     WX_URL = WX_URL + '?mmdebug'

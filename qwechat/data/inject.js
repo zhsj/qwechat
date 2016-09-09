@@ -65,3 +65,6 @@ Object.defineProperty(angular, 'bootstrap', {
     return angularBootstrapReal = real;
   }
 });
+
+window.onbeforeunload = null;
+lock(window, 'onbeforeunload', null);
