@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QApplication
 
 
 def runApp():
+    if config.DEBUG:
+        sys.argv.append("--remote-debugging-port=" + str(config.DEBUG_PORT))
     app = QApplication(sys.argv)
     app.setApplicationName(config.APP_NAME)
     QApplication.setQuitOnLastWindowClosed(False)

@@ -1,13 +1,11 @@
 import config
-from notifications import NotificationsBridge
-from popup import Popup
 from view import View
 from tray import TrayIcon
-from inspector import Inspector
+from proxy import proxy
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWidgets import QApplication, QSplitter, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QVBoxLayout, QWidget
+from PyQt5.QtNetwork import QNetworkProxy
 
 
 class Window(QWidget):
@@ -18,31 +16,19 @@ class Window(QWidget):
         self.trayIcon.show()
 
         self.setupView()
-        self.view.nam.loadCookie()
         self.view.load(QUrl(config.WX_URL))
+        self.view.setZoomFactor(self.physicalDpiX() * 0.008)
         self.setupLayout()
 
-        self.popup = Popup(self.showFront, self)
+        QNetworkProxy.setApplicationProxy(proxy)
 
     def setupView(self):
         self.view = View(self)
-        self.view.page().mainFrame().javaScriptWindowObjectCleared.connect(
-            self.populateJavaScript)
+        self.populateJavaScript()
 
     def setupLayout(self):
         layout = QVBoxLayout(self)
-        if config.DEBUG:
-            self.view.page().settings().setAttribute(
-                QWebSettings.DeveloperExtrasEnabled, True)
-            webInspector = Inspector(self)
-            webInspector.setPage(self.view.page())
-            self.splitter = QSplitter(self)
-            self.splitter.setOrientation(Qt.Vertical)
-            self.splitter.addWidget(self.view)
-            self.splitter.addWidget(webInspector)
-            layout.addWidget(self.splitter)
-        else:
-            layout.addWidget(self.view)
+        layout.addWidget(self.view)
 
     def showFront(self):
         self.setWindowState(self.windowState() & ~Qt.WindowMinimized)
@@ -50,7 +36,6 @@ class Window(QWidget):
         self.show()
 
     def quitApp(self):
-        self.view.nam.saveCookie()
         QApplication.instance().quit()
 
     def setupTrayIcon(self):
@@ -63,10 +48,6 @@ class Window(QWidget):
         self.setWindowIcon(icon)
 
     def populateJavaScript(self):
-        notificatonsBridge = NotificationsBridge(
-            self.view.nam, self.popup, self)
-        frame = self.view.page().mainFrame()
-        frame.addToJavaScriptWindowObject("notify", notificatonsBridge)
         with open(config.inject_js_path, "r") as f:
             injectJS = f.read()
-        frame.evaluateJavaScript(injectJS)
+        self.view.page().runJavaScript(injectJS)

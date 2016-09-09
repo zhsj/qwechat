@@ -1,9 +1,9 @@
 'use strict';
 
-window.Notification = function(title, opts) {
-  if(typeof opts === 'undefined') { notify.showMsg(title); }
-  else { notify.showMsg(title, opts.body, opts.icon); }
-};
+// window.Notification = function(title, opts) {
+//   if(typeof opts === 'undefined') { notify.showMsg(title); }
+//   else { notify.showMsg(title, opts.body, opts.icon); }
+// };
 
 
 // Include MIT Licensed code. Translated by Babel.js
