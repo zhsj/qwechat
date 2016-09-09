@@ -12,6 +12,6 @@ setup(name='qwechat',
       install_requires=['PyQt5==5.7'],
       include_package_data=True,
       package_data={
-          '': ['data/icons/*.png', 'data/*.desktop', 'js/*.js']
+          '': ['data/*']
       }
       )
