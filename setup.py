@@ -1,6 +1,16 @@
 from setuptools import setup, find_packages
+from codecs import open
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(name='qwechat',
       version='0.3.0',
+      description='QWeChat',
+      long_description=long_description,
       packages=find_packages(),
       author='Shengjing Zhu',
       author_email='zsj950618@gmail.com',
@@ -10,8 +20,7 @@ setup(name='qwechat',
           'gui_scripts': ['qwechat=qwechat.app:runApp']
       },
       install_requires=['PyQt5==5.7'],
-      include_package_data=True,
       package_data={
-          '': ['data/*']
+          'qwechat': ['data/*']
       }
       )
